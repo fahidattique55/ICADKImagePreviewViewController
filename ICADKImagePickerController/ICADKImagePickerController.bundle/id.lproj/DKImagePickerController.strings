@@ -1,0 +1,31 @@
+//
+//  GitHub
+//  https://github.com/zhangao0086/ICADKImagePickerController
+//
+//
+//  License
+//  Copyright (c) 2014 ZhangAo
+//  Released under an MIT license: http://opensource.org/licenses/MIT
+//
+
+"select" = "Pilih(%ld)";
+
+"permissionCamera" = "Izinkan Akes Kamera";
+
+"permissionPhoto" = "Izinkan Akses Foto";
+
+"permit" = "Izinkan Akses";
+
+"gotoSettings" = "Berikan akses pada Setelan";
+
+"ok" = "OK";
+
+"selectPhotosOrVideos" = "Select Photos or Videos";
+
+"selectPhotosOrVideosError" = "It is not possible to select photos and videos at the same time.";
+
+"done" = "Selanjutnya";
+
+"maxLimitReached" = "Maksimal Gambar";
+
+"maxLimitReachedMessage" = "Anda dapat menambahkan maksimal dari %ld Gambar";
