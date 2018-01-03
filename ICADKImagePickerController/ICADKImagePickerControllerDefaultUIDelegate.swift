@@ -100,7 +100,7 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
     let alert = UIAlertController(title: DKImageLocalizedStringWithKey("Maximum images")
       , message:String(format: DKImageLocalizedStringWithKey("You can add a maximum of \(imagePickerController.maxSelectableCount) images per listing"))
       , preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("ok"), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("Ok"), style: .cancel) { _ in })
         imagePickerController.present(alert, animated: true){}
 	}
 	
