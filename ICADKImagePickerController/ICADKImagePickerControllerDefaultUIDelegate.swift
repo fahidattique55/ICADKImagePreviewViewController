@@ -97,9 +97,9 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
     }
 	
 	open func imagePickerControllerDidReachMaxLimit(_ imagePickerController: ICADKImagePickerController) {
-        let alert = UIAlertController(title: DKImageLocalizedStringWithKey("maxLimitReached")
-            , message:String(format: DKImageLocalizedStringWithKey("maxLimitReachedMessage"), imagePickerController.maxSelectableCount)
-            , preferredStyle: .alert)
+    let alert = UIAlertController(title: DKImageLocalizedStringWithKey("Maximum images")
+      , message:String(format: DKImageLocalizedStringWithKey("You can add a maximum of \(imagePickerController.maxSelectableCount) images per listing"))
+      , preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("ok"), style: .cancel) { _ in })
         imagePickerController.present(alert, animated: true){}
 	}
