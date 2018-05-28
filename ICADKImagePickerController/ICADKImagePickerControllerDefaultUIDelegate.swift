@@ -29,9 +29,11 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
     
   open func updateDoneButtonTitle(_ button: UIButton) {
     if self.imagePickerController.selectedAssets.count > 0 {
-      button.setTitle(DKImageLocalizedStringWithKey("kDoneText"), for: .normal)
+     // button.setTitle(DKImageLocalizedStringWithKey("kDoneText"), for: .normal)
+        button.setTitle("\(DKImageLocalizedStringWithKey("select"))(\(self.imagePickerController.selectedAssets.count))",for: .normal)
     } else {
-      button.setTitle(DKImageLocalizedStringWithKey(""), for: .normal)
+     // button.setTitle(DKImageLocalizedStringWithKey(""), for: .normal)
+        button.setTitle(DKImageLocalizedStringWithKey("doneLabel"), for: .normal)
     }
     
     button.sizeToFit()
