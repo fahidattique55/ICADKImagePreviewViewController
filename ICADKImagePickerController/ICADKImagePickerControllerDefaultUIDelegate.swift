@@ -29,7 +29,7 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
     
   open func updateDoneButtonTitle(_ button: UIButton) {
     if self.imagePickerController.selectedAssets.count > 0 {
-      button.setTitle("kDoneText".localized(), for: .normal)
+      button.setTitle(DKImageLocalizedStringWithKey("kDoneText"), for: .normal)
     } else {
       button.setTitle(DKImageLocalizedStringWithKey(""), for: .normal)
     }
@@ -72,7 +72,7 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
                                   showsCancelButtonForVC vc: UIViewController) {
 
     let cancelBtn =  UIBarButtonItem(title: DKImageLocalizedStringWithKey("KCancelText"), style: .plain, target: imagePickerController, action: #selector(imagePickerController.dismiss as () -> Void))
-    let attributes = [NSForegroundColorAttributeName : UIColor.carlistBlue]
+    let attributes = [NSForegroundColorAttributeName : UIColor.white]
     
     cancelBtn.setTitleTextAttributes(attributes, for: .normal)
     vc.navigationItem.leftBarButtonItem =  cancelBtn
@@ -100,7 +100,7 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
     }
 	
   open func imagePickerControllerDidReachMaxLimit(_ imagePickerController: ICADKImagePickerController) {
-    let alert = UIAlertController(title: DKImageLocalizedStringWithKey("maxLimitReached"), message:String(format: DKImageLocalizedStringWithKey("maxLimitReachedMessage"), imagePickerController.maxSelectableCount), preferredStyle: .alert)
+    let alert = UIAlertController(title: DKImageLocalizedStringWithKey("maxImg"), message:String(format: "\(DKImageLocalizedStringWithKey("youCanAddMaximumOf")) \(imagePickerController.maxSelectableCount) \(DKImageLocalizedStringWithKey("imagesPerListing"))"), preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("KOKText"), style: .cancel) { _ in })
     imagePickerController.present(alert, animated: true) {}
   }

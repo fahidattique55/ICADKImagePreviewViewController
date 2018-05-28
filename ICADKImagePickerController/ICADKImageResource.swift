@@ -75,7 +75,7 @@ public class DKImageLocalizedString {
   }
       
 //        return NSLocalizedString(key, tableName: "ICADKImagePickerController", bundle:Bundle.imagePickerControllerBundle(), value: "", comment: "")
-    }
+ //   }
     
 }
 
