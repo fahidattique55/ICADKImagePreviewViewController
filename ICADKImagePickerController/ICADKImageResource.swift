@@ -10,10 +10,24 @@ import UIKit
 
 public extension Bundle {
     
-    class func imagePickerControllerBundle() -> Bundle {
+  class func imagePickerControllerBundle() -> Bundle {
         let assetPath = Bundle(for: ICADKImageResource.self).resourcePath!
         return Bundle(path: (assetPath as NSString).appendingPathComponent("ICADKImagePickerController.bundle"))!
     }
+  class func localisationBundle() -> Bundle {
+    let lang = UserDefaults.standard.string(forKey: "LCLCurrentLanguageKey")
+    let bundle: Bundle = .main
+    
+    if let path = bundle.path(forResource:lang, ofType: "lproj"),
+      let bundle = Bundle(path: path) {
+      return bundle
+    }
+    else if let path = bundle.path(forResource: "Base", ofType: "lproj"),
+      let bundle = Bundle(path: path) {
+      return bundle
+    }
+    return bundle
+  }
     
 }
 
@@ -57,7 +71,10 @@ public class ICADKImageResource {
 public class DKImageLocalizedString {
     
     public class func localizedStringForKey(_ key: String) -> String {
-        return NSLocalizedString(key, tableName: "ICADKImagePickerController", bundle:Bundle.imagePickerControllerBundle(), value: "", comment: "")
+      return Bundle.localisationBundle().localizedString(forKey: key, value: nil, table: nil)
+  }
+      
+//        return NSLocalizedString(key, tableName: "ICADKImagePickerController", bundle:Bundle.imagePickerControllerBundle(), value: "", comment: "")
     }
     
 }

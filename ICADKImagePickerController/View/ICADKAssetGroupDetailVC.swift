@@ -462,7 +462,7 @@ internal class ICADKAssetGroupDetailVC: UIViewController, UICollectionViewDelega
                     title: DKImageLocalizedStringWithKey("selectPhotosOrVideos")
                     , message: DKImageLocalizedStringWithKey("selectPhotosOrVideosError")
                     , preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("ok"), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("KOKText"), style: .cancel) { _ in })
             self.imagePickerController.present(alert, animated: true){}
 
             return false

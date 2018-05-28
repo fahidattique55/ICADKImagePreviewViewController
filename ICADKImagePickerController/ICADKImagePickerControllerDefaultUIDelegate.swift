@@ -27,15 +27,15 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
 		return self.doneButton!
 	}
     
-    open func updateDoneButtonTitle(_ button: UIButton) {
-        if self.imagePickerController.selectedAssets.count > 0 {
-            button.setTitle(String(format: DKImageLocalizedStringWithKey("select"), self.imagePickerController.selectedAssets.count), for: .normal)
-        } else {
-            button.setTitle(DKImageLocalizedStringWithKey("done"), for: .normal)
-        }
-        
-        button.sizeToFit()
+  open func updateDoneButtonTitle(_ button: UIButton) {
+    if self.imagePickerController.selectedAssets.count > 0 {
+      button.setTitle("kDoneText".localized(), for: .normal)
+    } else {
+      button.setTitle(DKImageLocalizedStringWithKey(""), for: .normal)
     }
+    
+    button.sizeToFit()
+  }
 	
 	// Delegate methods...
 	
@@ -69,11 +69,14 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
 	}
 	
 	open func imagePickerController(_ imagePickerController: ICADKImagePickerController,
-	                                  showsCancelButtonForVC vc: UIViewController) {
-		vc.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-		                                                      target: imagePickerController,
-		                                                      action: #selector(imagePickerController.dismiss as (Void) -> Void))
-	}
+                                  showsCancelButtonForVC vc: UIViewController) {
+
+    let cancelBtn =  UIBarButtonItem(title: DKImageLocalizedStringWithKey("KCancelText"), style: .plain, target: imagePickerController, action: #selector(imagePickerController.dismiss as () -> Void))
+    let attributes = [NSForegroundColorAttributeName : UIColor.carlistBlue]
+    
+    cancelBtn.setTitleTextAttributes(attributes, for: .normal)
+    vc.navigationItem.leftBarButtonItem =  cancelBtn
+  }
 	
 	open func imagePickerController(_ imagePickerController: ICADKImagePickerController,
 	                                  hidesCancelButtonForVC vc: UIViewController) {
@@ -96,13 +99,11 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
         self.updateDoneButtonTitle(self.createDoneButtonIfNeeded())
     }
 	
-	open func imagePickerControllerDidReachMaxLimit(_ imagePickerController: ICADKImagePickerController) {
-    let alert = UIAlertController(title: DKImageLocalizedStringWithKey("Maximum images")
-      , message:String(format: DKImageLocalizedStringWithKey("You can add a maximum of \(imagePickerController.maxSelectableCount) images per listing"))
-      , preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("Ok"), style: .cancel) { _ in })
-        imagePickerController.present(alert, animated: true){}
-	}
+  open func imagePickerControllerDidReachMaxLimit(_ imagePickerController: ICADKImagePickerController) {
+    let alert = UIAlertController(title: DKImageLocalizedStringWithKey("maxLimitReached"), message:String(format: DKImageLocalizedStringWithKey("maxLimitReachedMessage"), imagePickerController.maxSelectableCount), preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: DKImageLocalizedStringWithKey("KOKText"), style: .cancel) { _ in })
+    imagePickerController.present(alert, animated: true) {}
+  }
 	
 	open func imagePickerControllerFooterView(_ imagePickerController: ICADKImagePickerController) -> UIView? {
 		return nil
