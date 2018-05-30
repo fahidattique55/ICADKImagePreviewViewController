@@ -18,13 +18,17 @@ public extension Bundle {
     let lang = UserDefaults.standard.string(forKey: "LCLCurrentLanguageKey")
     let bundle: Bundle = .main
     
-    if let path = bundle.path(forResource:lang, ofType: "lproj"),
-      let bundle = Bundle(path: path) {
-      return bundle
+    if lang == nil{
+      if let path = bundle.path(forResource: "en", ofType: "lproj"),
+        let bundle = Bundle(path: path){
+        return bundle
+      }
     }
-    else if let path = bundle.path(forResource: "Base", ofType: "lproj"),
-      let bundle = Bundle(path: path) {
-      return bundle
+    else{
+      if let path = bundle.path(forResource:lang, ofType: "lproj"),
+        let bundle = Bundle(path: path){
+        return bundle
+      }
     }
     return bundle
   }
