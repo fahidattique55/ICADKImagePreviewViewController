@@ -414,7 +414,7 @@ open class ICADKImagePickerController : UINavigationController {
 		 self.present(self.createCamera(), animated: true, completion: nil)
 	}
 	
-	open func dismiss() {
+    @objc open func dismiss() {
         self.dismiss(animated: true)
 	}
     
@@ -424,7 +424,7 @@ open class ICADKImagePickerController : UINavigationController {
         })
     }
 	
-    open func done() {
+    @objc open func done() {
 		 self.presentingViewController?.dismiss(animated: true, completion: {
 		 	self.didSelectAssets?(self.selectedAssets)
 		 })

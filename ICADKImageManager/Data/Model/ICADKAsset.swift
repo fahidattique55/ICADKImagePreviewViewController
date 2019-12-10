@@ -7,6 +7,7 @@
 //
 
 import Photos
+import UIKit
 
 public extension CGSize {
 	
@@ -206,7 +207,7 @@ public extension ICADKAsset {
             ICADKAssetWriter.writeQueue.addOperation({
                 if let avAsset = avAsset,
                     let exportSession = AVAssetExportSession(asset: avAsset, presetName: presetName) {
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie
+                    exportSession.outputFileType = AVFileType.mov
                     exportSession.outputURL = URL(fileURLWithPath: path)
                     exportSession.shouldOptimizeForNetworkUse = true
                     exportSession.exportAsynchronously(completionHandler: {

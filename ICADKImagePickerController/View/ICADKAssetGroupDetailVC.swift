@@ -57,7 +57,7 @@ internal class ICADKAssetGroupDetailVC: UIViewController, UICollectionViewDelega
 			self.cameraButton.setImage(cameraImage, for: .normal)
 		}
 		
-        func cameraButtonClicked() {
+        @objc func cameraButtonClicked() {
             if let didCameraButtonClicked = self.didCameraButtonClicked {
                 didCameraButtonClicked()
             }
@@ -230,10 +230,10 @@ internal class ICADKAssetGroupDetailVC: UIViewController, UICollectionViewDelega
     fileprivate lazy var selectGroupButton: UIButton = {
         let button = UIButton()
 		
-		let globalTitleColor = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+        let globalTitleColor = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
 		button.setTitleColor(globalTitleColor ?? UIColor.black, for: .normal)
 		
-		let globalTitleFont = UINavigationBar.appearance().titleTextAttributes?[NSFontAttributeName] as? UIFont
+        let globalTitleFont = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.font] as? UIFont
 		button.titleLabel!.font = globalTitleFont ?? UIFont.boldSystemFont(ofSize: 18.0)
 		
 		button.addTarget(self, action: #selector(ICADKAssetGroupDetailVC.showGroupSelector), for: .touchUpInside)
@@ -356,7 +356,7 @@ internal class ICADKAssetGroupDetailVC: UIViewController, UICollectionViewDelega
 		self.navigationItem.titleView = self.selectGroupButton
 	}
     
-    func showGroupSelector() {
+    @objc func showGroupSelector() {
         ICADKPopoverViewController.popoverViewController(self.groupListVC, fromView: self.selectGroupButton)
     }
     

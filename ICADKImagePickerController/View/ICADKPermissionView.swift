@@ -48,8 +48,8 @@ internal class ICADKPermissionView: UIView {
 		self.center = self.superview!.center
 	}
 	
-	internal func gotoSettings() {
-		if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
+    @objc internal func gotoSettings() {
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
 			UIApplication.shared.openURL(appSettings)
 		}
 	}

@@ -45,15 +45,15 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     open class func checkCameraPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
         func hasCameraPermission() -> Bool {
-            return AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) == .authorized
+            return AVCaptureDevice.authorizationStatus(for: AVMediaType.video) == .authorized
         }
         
         func needsToRequestCameraPermission() -> Bool {
-            return AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) == .notDetermined
+            return AVCaptureDevice.authorizationStatus(for: AVMediaType.video) == .notDetermined
         }
         
         hasCameraPermission() ? handler(true) : (needsToRequestCameraPermission() ?
-            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { granted in
+            AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { granted in
                 DispatchQueue.main.async(execute: { () -> Void in
                     hasCameraPermission() ? handler(true) : handler(false)
                 })
@@ -76,7 +76,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     }
     
     /// The flashModel will to be remembered to next use.
-    open var flashMode:AVCaptureFlashMode! {
+    open var flashMode:AVCaptureDevice.FlashMode! {
         didSet {
             self.updateFlashButton()
             self.updateFlashMode()
@@ -99,7 +99,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
         }
     }
     
-    open let captureSession = AVCaptureSession()
+    public let captureSession = AVCaptureSession()
     open var previewLayer: AVCaptureVideoPreviewLayer!
     fileprivate var beginZoomScale: CGFloat = 1.0
     fileprivate var zoomScale: CGFloat = 1.0
@@ -114,7 +114,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     open var originalOrientation: UIDeviceOrientation!
     open var currentOrientation: UIDeviceOrientation!
-    open let motionManager = CMMotionManager()
+    public let motionManager = CMMotionManager()
     
     open lazy var flashButton: UIButton = {
         let flashButton = UIButton()
@@ -262,7 +262,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
         // cancel button
         let cancelButton: UIButton = {
             let cancelButton = UIButton()
-            cancelButton.addTarget(self, action: #selector(dismiss as (Void) -> Void), for: .touchUpInside)
+            cancelButton.addTarget(self, action: #selector(dismissIt), for: .touchUpInside)
             cancelButton.setImage(ICADKCameraResource.cameraCancelImage(), for: .normal)
             cancelButton.sizeToFit()
             
@@ -281,7 +281,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     }
     
     open func setupSession() {
-        self.captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+        self.captureSession.sessionPreset = AVCaptureSession.Preset.photo
         
         self.setupCurrentDevice()
         
@@ -297,12 +297,12 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
             
             if self.captureSession.canAddOutput(metadataOutput) {
                 self.captureSession.addOutput(metadataOutput)
-                metadataOutput.metadataObjectTypes = [AVMetadataObjectTypeFace]
+                metadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.face]
             }
         }
         
         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        self.previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         self.previewLayer.frame = self.view.bounds
         
         let rootLayer = self.view.layer
@@ -324,7 +324,9 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
                 self.captureSession.removeInput(oldInput)
             }
             
-            let frontInput = try? AVCaptureDeviceInput(device: self.currentDevice)
+            guard let currentDevice = self.currentDevice else { return }
+            
+            guard let frontInput = try? AVCaptureDeviceInput(device: currentDevice) else { return }
             if self.captureSession.canAddInput(frontInput) {
                 self.captureSession.addInput(frontInput)
             }
@@ -343,7 +345,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     }
     
     open func setupDevices() {
-        let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! [AVCaptureDevice]
+        let devices = AVCaptureDevice.devices(for: AVMediaType.video) as! [AVCaptureDevice]
         
         for device in devices {
             if device.position == .back {
@@ -372,17 +374,17 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     }
     
     open func stopSession() {
-        self.previewLayer.connection.isEnabled = false
+        self.previewLayer.connection?.isEnabled = false
     }
     
     // MARK: - Callbacks
     
-    internal func dismiss() {
+    @objc internal func dismissIt() {
         self.didCancel?()
     }
     
-    open func takePicture() {
-        let authStatus = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
+    @objc open func takePicture() {
+        let authStatus = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
         if authStatus == .denied {
             return
         }
@@ -391,17 +393,20 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
             self.captureButton.isEnabled = false
             
             DispatchQueue.global().async(execute: {
-                if let connection = stillImageOutput.connection(withMediaType: AVMediaTypeVideo) {
+                if let connection = stillImageOutput.connection(with: AVMediaType.video) {
                     connection.videoOrientation = self.currentOrientation.toAVCaptureVideoOrientation()
                     connection.videoScaleAndCropFactor = self.zoomScale
                     
-                    stillImageOutput.captureStillImageAsynchronously(from: connection, completionHandler: { (imageDataSampleBuffer, error) in
+                    stillImageOutput.captureStillImageAsynchronously(from: connection, completionHandler: { (imageDataSampleBufferValue, error) in
                         if error == nil {
+                            
+                            guard let imageDataSampleBuffer = imageDataSampleBufferValue else { return }
+                            
                             let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
                             
                             if let didFinishCapturingImage = self.didFinishCapturingImage, let imageData = imageData, let takenImage = UIImage(data: imageData) {
                                 
-                                let outputRect = self.previewLayer.metadataOutputRectOfInterest(for: self.previewLayer.bounds)
+                                let outputRect = self.previewLayer.metadataOutputRectConverted(fromLayerRect: self.previewLayer.bounds)
                                 let takenCGImage = takenImage.cgImage!
                                 let width = CGFloat(takenCGImage.width)
                                 let height = CGFloat(takenCGImage.height)
@@ -426,7 +431,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     // MARK: - Handles Zoom
     
-    open func handleZoom(_ gesture: UIPinchGestureRecognizer) {
+    @objc open func handleZoom(_ gesture: UIPinchGestureRecognizer) {
         if gesture.state == .began {
             self.beginZoomScale = self.zoomScale
         } else if gesture.state == .changed {
@@ -440,7 +445,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     // MARK: - Handles Focus
     
-    open func handleFocus(_ gesture: UITapGestureRecognizer) {
+    @objc open func handleFocus(_ gesture: UITapGestureRecognizer) {
         if let currentDevice = self.currentDevice , currentDevice.isFocusPointOfInterestSupported {
             let touchPoint = gesture.location(in: self.view)
             self.focusAtTouchPoint(touchPoint)
@@ -449,7 +454,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     // MARK: - Handles Switch Camera
     
-    internal func switchCamera() {
+    @objc internal func switchCamera() {
         self.currentDevice = self.currentDevice == self.captureDeviceRear ?
             self.captureDeviceFront : self.captureDeviceRear
         self.currentDeviceType = self.currentDevice == self.captureDeviceRear ? .rear : .front
@@ -459,7 +464,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
     
     // MARK: - Handles Flash
     
-    internal func switchFlashMode() {
+    @objc internal func switchFlashMode() {
         switch self.flashMode! {
         case .auto:
             self.flashMode = .off
@@ -470,12 +475,12 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
         }
     }
     
-    open func flashModeFromUserDefaults() -> AVCaptureFlashMode {
+    open func flashModeFromUserDefaults() -> AVCaptureDevice.FlashMode {
         let rawValue = UserDefaults.standard.integer(forKey: "ICADKCamera.flashMode")
-        return AVCaptureFlashMode(rawValue: rawValue)!
+        return AVCaptureDevice.FlashMode(rawValue: rawValue)!
     }
     
-    open func updateFlashModeToUserDefautls(_ flashMode: AVCaptureFlashMode) {
+    open func updateFlashModeToUserDefautls(_ flashMode: AVCaptureDevice.FlashMode) {
         UserDefaults.standard.set(flashMode.rawValue, forKey: "ICADKCamera.flashMode")
     }
     
@@ -483,9 +488,9 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
         struct FlashImage {
             
             static let images = [
-                AVCaptureFlashMode.auto : ICADKCameraResource.cameraFlashAutoImage(),
-                AVCaptureFlashMode.on : ICADKCameraResource.cameraFlashOnImage(),
-                AVCaptureFlashMode.off : ICADKCameraResource.cameraFlashOffImage()
+                AVCaptureDevice.FlashMode.auto : ICADKCameraResource.cameraFlashAutoImage(),
+                AVCaptureDevice.FlashMode.on : ICADKCameraResource.cameraFlashOnImage(),
+                AVCaptureDevice.FlashMode.off : ICADKCameraResource.cameraFlashOffImage()
             ]
             
         }
@@ -530,7 +535,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
             FocusView.focusView.center = touchPoint
             self.view.addSubview(FocusView.focusView)
             UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.1,
-                                       options: UIViewAnimationOptions(), animations: { () -> Void in
+                           options: UIView.AnimationOptions(), animations: { () -> Void in
                                         FocusView.focusView.transform = CGAffineTransform.identity.scaledBy(x: 0.6, y: 0.6)
             }) { (Bool) -> Void in
                 FocusView.focusView.removeFromSuperview()
@@ -541,7 +546,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
             return
         }
         
-        let focusPoint = self.previewLayer.captureDevicePointOfInterest(for: touchPoint)
+        let focusPoint = self.previewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
         
         showFocusViewAtPoint(touchPoint)
         
@@ -586,7 +591,7 @@ open class ICADKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate
             var contentViewNewSize: CGSize!
             let width = self.view.bounds.width
             let height = self.view.bounds.height
-            if UIDeviceOrientationIsLandscape(self.currentOrientation) {
+            if self.currentOrientation.isLandscape {
                 contentViewNewSize = CGSize(width: max(width, height), height: min(width, height))
             } else {
                 contentViewNewSize = CGSize(width: min(width, height), height: max(width, height))

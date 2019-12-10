@@ -17,9 +17,9 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
 	
 	open func createDoneButtonIfNeeded() -> UIButton {
         if self.doneButton == nil {
-            let button = UIButton(type: UIButtonType.custom)
+            let button = UIButton(type: UIButton.ButtonType.custom)
             button.setTitleColor(UINavigationBar.appearance().tintColor ?? self.imagePickerController.navigationBar.tintColor, for: .normal)
-            button.addTarget(self.imagePickerController, action: #selector(ICADKImagePickerController.done), for: UIControlEvents.touchUpInside)
+            button.addTarget(self.imagePickerController, action: #selector(ICADKImagePickerController.done), for: UIControl.Event.touchUpInside)
             self.doneButton = button
             self.updateDoneButtonTitle(button)
         }
@@ -74,7 +74,7 @@ open class ICADKImagePickerControllerDefaultUIDelegate: NSObject, ICADKImagePick
                                   showsCancelButtonForVC vc: UIViewController) {
 
     let cancelBtn =  UIBarButtonItem(title: DKImageLocalizedStringWithKey("KCancelText"), style: .plain, target: imagePickerController, action: #selector(imagePickerController.dismiss as () -> Void))
-    let attributes = [NSForegroundColorAttributeName : UIColor.white]
+        let attributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
     
     cancelBtn.setTitleTextAttributes(attributes, for: .normal)
     vc.navigationItem.leftBarButtonItem =  cancelBtn

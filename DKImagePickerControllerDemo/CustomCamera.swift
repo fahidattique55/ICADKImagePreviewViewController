@@ -34,17 +34,16 @@ open class CustomUIDelegate: ICADKImagePickerControllerDefaultUIDelegate, UIImag
 	
 	// MARK: - UIImagePickerControllerDelegate methods
 	
-	open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-		let mediaType = info[UIImagePickerControllerMediaType] as! String
-		
-		if mediaType == kUTTypeImage as String {
-			let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-			self.didFinishCapturingImage?(image)
-		} else if mediaType == kUTTypeMovie as String {
-			let videoURL = info[UIImagePickerControllerMediaURL] as! URL
-			self.didFinishCapturingVideo?(videoURL)
-		}
-	}
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
+        if mediaType == kUTTypeImage as String {
+            let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+            self.didFinishCapturingImage?(image)
+        } else if mediaType == kUTTypeMovie as String {
+            let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as! URL
+            self.didFinishCapturingVideo?(videoURL)
+        }
+    }
 	
 	open func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
 		self.didCancel?()

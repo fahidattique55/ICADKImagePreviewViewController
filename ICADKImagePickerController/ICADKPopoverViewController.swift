@@ -19,15 +19,15 @@ open class ICADKPopoverViewController: UIViewController {
         popoverViewController.fromView = fromView
         
         popoverViewController.showInView(window)
-        window.rootViewController!.addChildViewController(popoverViewController)
+        window.rootViewController!.addChild(popoverViewController)
     }
     
     open class func dismissPopoverViewController() {
         let window = UIApplication.shared.keyWindow!
 
-        for vc in window.rootViewController!.childViewControllers {
+        for vc in window.rootViewController!.children {
             if vc is ICADKPopoverViewController {
-                (vc as! ICADKPopoverViewController).dismiss()
+                (vc as! ICADKPopoverViewController).dismissIt()
             }
         }
     }
@@ -106,7 +106,7 @@ open class ICADKPopoverViewController: UIViewController {
         
         let backgroundView = UIControl(frame: self.view.frame)
         backgroundView.backgroundColor = UIColor.clear
-        backgroundView.addTarget(self, action: #selector(dismiss as (Void) -> Void), for: .touchUpInside)
+        backgroundView.addTarget(self, action: #selector(dismissIt), for: .touchUpInside)
         backgroundView.autoresizingMask = self.view.autoresizingMask
         self.view = backgroundView
     }
@@ -139,13 +139,13 @@ open class ICADKPopoverViewController: UIViewController {
         }, completion: nil)
     }
     
-    func dismiss() {
+    @objc func dismissIt() {
         UIView.animate(withDuration: 0.2, animations: {
             self.popoverView.transform = self.popoverView.transform.translatedBy(x: 0, y: -(self.popoverView.bounds.height / 2)).scaledBy(x: 0.01, y: 0.01)
             self.view.backgroundColor = UIColor.clear
         }, completion: { result in
             self.view.removeFromSuperview()
-            self.removeFromParentViewController()
+            self.removeFromParent()
         }) 
     }
 	
@@ -153,7 +153,7 @@ open class ICADKPopoverViewController: UIViewController {
 		let popoverY = self.fromView.convert(self.fromView.frame.origin, to: self.view).y + self.fromView.bounds.height
 
 		var popoverWidth = self.contentViewController.preferredContentSize.width
-		if popoverWidth == UIViewNoIntrinsicMetric {
+        if popoverWidth == UIView.noIntrinsicMetric {
 			if UI_USER_INTERFACE_IDIOM() == .pad {
 				popoverWidth = self.view.bounds.width * 0.6
 			} else {
